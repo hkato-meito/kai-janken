@@ -1,0 +1,37 @@
+# 英語の単語を表示して日本語を回答する単語帳を作りたいです。
+# IDLEで動作するPythonコードを出してください。
+
+
+import random
+
+# 単語リスト（英語: 日本語）
+vocabulary = {
+    "apple": "りんご",
+    "banana": "バナナ",
+    "cherry": "さくらんぼ",
+    "dog": "犬",
+    "elephant": "象"
+}
+
+def quiz():
+    # 単語リストからランダムに単語を選ぶ
+    english_word = random.choice(list(vocabulary.keys()))
+    correct_answer = vocabulary[english_word]
+
+    # ユーザーに日本語の回答を求める
+    print(f"英語の単語: {english_word}")
+    user_answer = input("日本語の意味は何ですか？: ")
+
+    # 回答をチェックする
+    if user_answer == correct_answer:
+        print("正解です！")
+    else:
+        print(f"残念！正解は {correct_answer} です。")
+
+if __name__ == "__main__":
+    while True:
+        quiz()
+        # 続けるかどうかを確認
+        cont = input("もう一度やりますか？ (y/n): ")
+        if cont.lower() != 'y':
+            break
