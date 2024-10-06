@@ -1,31 +1,91 @@
+# Copilotプロンプト
+# Pythonで1～100までの数当てゲームを作りたいです。
+# IDLEで実行するコードを書いてください。
+
+# どういう手法で数当てゲームを早く当てることができますか。
+
+# さっきの戦略の中で1,2,3,4どれが一番早いですか。
+
+# 前のコードを修正してください。
+# ・3回数当てゲームを繰り返し、その中で一番早く予想できた回数を表示してください。
+# ・数を予想するとき、キーボードで入力せずにボタンを押して数字を選ぶようにしてください。
+
+# 前のコードを修正してください。
+# ・予想した数が大きいか小さいかを答える時、'「予想した数」より大きいです'、のように答えてください。
+
+# 前のコードを修正してください。
+# ・前に押したボタンは黒く表示してください。文字は白くしてください。
+# ・予想した数が大きいか小さいかを答える時、予想した回数が何回目かも表示してください。
+
+# 前のコードを修正してください。
+# ・前に押したボタンを黒く表示するとき、文字が灰色だったので文字は白にしてください。
+
+# 前のコードを修正してください。
+# ・ボタンを押し終わったとき、その押したボタンが大きいか、小さいかを「1から100までの数を当ててください。」と数字ボタンの間に表示してください。
+
+# Pythonコード
 import random
+import tkinter as tk
+from tkinter import messagebox
 
-def number_guessing_game():
-    print("数当てゲームへようこそ！")
-    print("1から100までの数を当ててください。")
+class GuessingGame:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("数当てゲーム")
+        self.best_score = float('inf')
+        self.current_game = 0
+        self.setup_game()
 
-    # コンピュータがランダムに1から100の間の数を選択
-    secret_number = random.randint(1, 100)
-    attempts = 0
+    def setup_game(self):
+        self.number_to_guess = random.randint(1, 100)
+        self.number_of_guesses = 0
+        self.current_game += 1
 
-    while True:
-        guess = input("数を入力してください: ")
+        self.label = tk.Label(self.root, text="1から100までの数を当ててください。")
+        self.label.pack()
 
-        # 入力された値が整数か確認
-        if not guess.isdigit():
-            print("無効な入力です。数値を入力してください。")
-            continue
-        
-        guess = int(guess)
-        attempts += 1
+        self.result_label = tk.Label(self.root, text="")
+        self.result_label.pack()
 
-        if guess < secret_number:
-            print("もっと大きな数です。")
-        elif guess > secret_number:
-            print("もっと小さな数です。")
+        self.buttons_frame = tk.Frame(self.root)
+        self.buttons_frame.pack()
+
+        self.buttons = []
+        for i in range(1, 101):
+            button = tk.Button(self.buttons_frame, text=str(i), command=lambda i=i: self.check_guess(i))
+            button.grid(row=(i-1)//10, column=(i-1)%10)
+            self.buttons.append(button)
+
+    def check_guess(self, guess):
+        self.number_of_guesses += 1
+        for button in self.buttons:
+            if int(button['text']) == guess:
+                button.config(bg='black', fg='white')
+                button.config(state='disabled')
+       
+        if guess < self.number_to_guess:
+            self.result_label.config(text=f"{guess} より大きいです。")
+            messagebox.showinfo("結果", f"{guess} より大きいです。 ({self.number_of_guesses} 回目の予想)")
+        elif guess > self.number_to_guess:
+            self.result_label.config(text=f"{guess} より小さいです。")
+            messagebox.showinfo("結果", f"{guess} より小さいです。 ({self.number_of_guesses} 回目の予想)")
         else:
-            print(f"正解です！{attempts}回で当てました。")
-            break
+            self.result_label.config(text="正解です！")
+            messagebox.showinfo("結果", f"おめでとうございます！ 正解です！ {self.number_of_guesses} 回目で当てました。")
+            if self.number_of_guesses < self.best_score:
+                self.best_score = self.number_of_guesses
+            if self.current_game < 3:
+                self.reset_game()
+            else:
+                messagebox.showinfo("ゲーム終了", f"3回のゲームが終了しました。最短予想回数は {self.best_score} 回です。")
+                self.root.quit()
+
+    def reset_game(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.setup_game()
 
 if __name__ == "__main__":
-    number_guessing_game()
+    root = tk.Tk()
+    game = GuessingGame(root)
+    root.mainloop()
